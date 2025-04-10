@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: console_assistant
+Version: 0.0.1
+Summary: console_assistant
+Home-page: https://github.com/blavikensbutcher
+Author: blavikensbutcher
+License: MIT
+Requires-Dist: prettytable
+Requires-Dist: prompt_toolkit
+Dynamic: author
+Dynamic: home-page
+Dynamic: license
+Dynamic: requires-dist
+Dynamic: summary
