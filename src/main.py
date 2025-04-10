@@ -1,33 +1,20 @@
 import os
 from datetime import datetime
 
-from classes import *
-from notes import *
 from prettytable import PrettyTable
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import FuzzyWordCompleter
 from prompt_toolkit.styles import Style
 
-from src.notes import Note
+from src.classes import AddressBook, Record
+from src.decorators.input_error import input_error
+from src.notes import Note, NoteManager
 
-def input_error(func):
-    def wrapper(*args):
-        try:
-            return func(*args)
-        except KeyError:
-            return "Contact not found."
-        except IndexError:
-            return "Data is already set for this contact"
-        except TypeError:
-            return "Invalid input. Please check your input."
-        except ValueError:
-            return "Invalid input. Please check your input."
-
-    return wrapper
 
 @input_error
 def handle_hello():
     return "How can I help you?"
+
 
 @input_error
 def handle_add(name, phone):
@@ -37,12 +24,14 @@ def handle_add(name, phone):
             record.add_phone(phone)
             ADDRESS_BOOK.add_record(record)
 
-            table = PrettyTable(['name', 'phones', 'birthday', 'email'])
-            table.align = 'l'
+            table = PrettyTable(["name", "phones", "birthday", "email"])
+            table.align = "l"
 
             answer = input("Would you add birthday or email? (Y/N) - ").lower()
             if answer == "y":
-                data = input("Enter birthday and email separated by space (e.g., 01.01.2000 email@example.com): ").split()
+                data = input(
+                    "Enter birthday and email separated by space (e.g., 01.01.2000 email@example.com): "
+                ).split()
                 data.sort()
                 if len(data) == 2:
                     birthday, email = data
@@ -185,8 +174,8 @@ def handle_show_all():
     if not ADDRESS_BOOK.data:
         return "The address book is empty."
 
-    table = PrettyTable(['Name', 'Phones', 'Birthday', 'Email'])
-    table.align = 'l'
+    table = PrettyTable(["Name", "Phones", "Birthday", "Email"])
+    table.align = "l"
 
     total_contacts = len(ADDRESS_BOOK.data)
 
@@ -194,8 +183,14 @@ def handle_show_all():
         phones = "\n".join(map(str, record.phones))
         birthday = record.birthday if record.birthday else ""
         email = record.email if record.email else ""
-        table.add_row([name, phones, birthday if birthday != "" else None, email if email != "" else None])
-
+        table.add_row(
+            [
+                name,
+                phones,
+                birthday if birthday != "" else None,
+                email if email != "" else None,
+            ]
+        )
         # Add separator line if it's not the last contact
         if idx < total_contacts - 1:
             table.add_row(["-" * 20, "-" * 20, "-" * 20, "-" * 20])
@@ -207,7 +202,7 @@ def handle_show_all():
 def handle_search(query):
     return ADDRESS_BOOK.search(query)
 
-  
+
 @input_error
 def handle_open():
     global ADDRESS_BOOK
@@ -222,6 +217,7 @@ def handle_open():
         ADDRESS_BOOK = AddressBook(None)
         NOTES_MANAGER = NoteManager(None)
         return "Starting with an empty address book."
+
 
 
 @input_error
@@ -325,11 +321,16 @@ def handle_show_birthday_list(date):
 
     for key, value in records.items():
         try:
-            user_birthday = datetime.strptime(
-                str(value.birthday), "%d.%m.%Y").replace(year=date_now.year).date()
+            user_birthday = (
+                datetime.strptime(str(value.birthday), "%d.%m.%Y")
+                .replace(year=date_now.year)
+                .date()
+            )
 
             if date_now <= user_birthday <= target_date:
-                users_within_range += f"{value.name}'s birthday is on {value.birthday}" + "\n"
+                users_within_range += (
+                    f"{value.name}'s birthday is on {value.birthday}" + "\n"
+                )
         except ValueError:
             continue
 
@@ -373,7 +374,7 @@ def show_help():
         showing all notes : Показати усі нотатки
         deletion note [назва] : Видаляє нотатку
         clear notes : Видаляє усі нотатки
-        searching note by tags [тег_1 тег_2...] : Шукати по тєгам
+        searching note by tags [тег_1 тег_2...] : Шукати по тегам
         """
 
     commands = [line.strip() for line in help_message.split("\n") if line.strip()]
@@ -455,25 +456,29 @@ def get_user_input():
 
 @input_error
 def main():
-    global ADDRESS_BOOK
-    global NOTES_MANAGER
-    handle_open()
-    current_directory = os.getcwd()
+    try:
+        global ADDRESS_BOOK
+        global NOTES_MANAGER
+        handle_open()
+        current_directory = os.getcwd()
 
-    while True:
-        user_input = get_user_input()
-        if user_input in ["good bye", "close", "exit"]:
-            print(handle_save(current_directory))
-            print("Good bye!")
-            break
-        for command in COMMANDS.keys():
-            if user_input.startswith(command):
-                args = user_input[len(command) :].split()
-                res = COMMANDS[command](*args)
-                print(res) if res is not None else ...
+        while True:
+            user_input = get_user_input()
+            if user_input in ["good bye", "close", "exit"]:
+                print(handle_save(current_directory))
+                print("Good bye!")
                 break
-        else:
-            print("Unknown command. Please try again.")
+            for command in COMMANDS.keys():
+                if user_input.startswith(command):
+                    args = user_input[len(command) :].split()
+                    res = COMMANDS[command](*args)
+                    print(res) if res is not None else ...
+                    break
+            else:
+                print("Unknown command. Please try again.")
+    except KeyboardInterrupt:
+        prompt(message="Good bye!", style=custom_style)
+        exit()
 
 
 if __name__ == "__main__":

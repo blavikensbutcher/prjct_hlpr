@@ -1,5 +1,0 @@
-console_assistant==0.0.1
-prettytable==3.16.0
-prompt_toolkit==3.0.50
-setuptools==78.1.0
-wcwidth==0.2.13
