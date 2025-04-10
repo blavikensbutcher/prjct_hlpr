@@ -281,12 +281,34 @@ def handle_add_note(author, title):
 
 @input_error
 def handle_delete_note(title):
-    pass
+    all_notes = NOTES_MANAGER.notes
+    match = None
+    for el in all_notes:
+        note_title = el.title
+        if title == note_title:
+            match = el
+            break
+    if match:
+        NOTES_MANAGER.remove_note(match)
+    else:
+        print("It's note is exist")
 
 
 @input_error
 def handle_add_tags(*args):
-    pass
+    title = args[0]
+    tags = ", ".join(args[1:])
+    all_notes = NOTES_MANAGER.notes
+    match = None
+    for el in all_notes:
+        note_title = el.title
+        if title == note_title:
+            match = el
+            break
+    else:
+        print("Сould not find note")
+    if match:
+        NOTES_MANAGER.add_tag(match, tags)
 
 
 @input_error
@@ -316,7 +338,8 @@ def handle_show_birthday_list(date):
 
 @input_error
 def handle_search_note_by_tags(*args):
-    pass
+    tags = ",".join(args)
+    return NOTES_MANAGER.search_notes_by_tags(tags)
 
 
 @input_error
