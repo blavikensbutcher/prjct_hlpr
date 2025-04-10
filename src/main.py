@@ -6,7 +6,7 @@ from prompt_toolkit.completion import FuzzyWordCompleter
 
 from prompt_toolkit.styles import Style
 
-from src.decorators.input_error import input_error
+from decorators.input_error import input_error
 
 
 @input_error
@@ -103,8 +103,17 @@ def handle_add_note(author, title):
 
 @input_error
 def handle_delete_note(title):
-    pass
-
+    all_notes = NOTES_MANAGER.notes
+    match = None
+    for el in all_notes:
+        note_title = el.title
+        if title == note_title:
+            match = el
+            break
+    if match:
+        NOTES_MANAGER.remove_note(match)
+    else:
+        print("It's note is exist")
 
 @input_error
 def handle_add_tags(*args):
