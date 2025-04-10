@@ -76,7 +76,29 @@ def handle_save(path_dir):
 
 @input_error
 def handle_add_note(author, title):
-    pass
+    for note in NOTES_MANAGER.notes:
+        if note.title == title:
+            print("It's note is exist")
+            return
+    text = input("write your text - ")
+    note = Note(author, title, text)
+    NOTES_MANAGER.add_note(note)
+    tag = input("Would you add tags? (Y/N) - ").lower()
+    if tag == "y":
+        data = input("Enter your data separated by space: ").lower()
+        a = data.split()
+        tags = ", ".join(a)
+        all_notes = NOTES_MANAGER.notes
+        match = None
+        for el in all_notes:
+            note_title = el.title
+            if title == note_title:
+                match = el
+                break
+        if match:
+            NOTES_MANAGER.add_tag(match, tags)
+    elif tag != "n":
+        print("Invalid input.")
 
 
 @input_error
@@ -101,12 +123,12 @@ def handle_search_note_by_tags(*args):
 
 @input_error
 def handle_clear_notes():
-    pass
+    NOTES_MANAGER.clear_notes()
 
 
 @input_error
 def show_all_notes():
-    pass
+    NOTES_MANAGER.print_notes()
 
 
 def show_help():
