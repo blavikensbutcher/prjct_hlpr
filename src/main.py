@@ -7,22 +7,23 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import FuzzyWordCompleter
 from prompt_toolkit.styles import Style
 
-# from .decorators.input_error import input_error
+from src.decorators.input_error import input_error
+from src.notes import Note
 
-def input_error(func):
-    def wrapper(*args):
-        try:
-            return func(*args)
-        except KeyError:
-            return "Contact not found."
-        except IndexError:
-            return "Data is already set for this contact"
-        except TypeError:
-            return "Invalid input. Please check your input."
-        except ValueError:
-            return "Invalid input. Please check your input."
+# def input_error(func):
+#     def wrapper(*args):
+#         try:
+#             return func(*args)
+#         except KeyError:
+#             return "Contact not found."
+#         except IndexError:
+#             return "Data is already set for this contact"
+#         except TypeError:
+#             return "Invalid input. Please check your input."
+#         except ValueError:
+#             return "Invalid input. Please check your input."
 
-    return wrapper
+#     return wrapper
 
 @input_error
 def handle_hello():
