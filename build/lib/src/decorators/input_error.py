@@ -1,3 +1,4 @@
+
 def input_error(func):
     def wrapper(*args):
         try:
