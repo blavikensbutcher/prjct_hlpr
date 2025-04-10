@@ -50,6 +50,24 @@ class NoteManager:
         self.notes.append(note)
         print("Note added successfully.")
         
+    def search_notes(self, info):
+        result = []
+        for note in self.notes:
+            if info in note.author or info in note.title or info in note.note or info in note.tags or info in note.date:
+                result.append(note)
+        table = PrettyTable(['Author', 'Title', 'Note', 'Tags', 'Date'])
+        table.align = 'l'
+        for data in result:
+            table.add_row([data.author, data.title, data.note, data.tags, data.date])
+        print(table)
+        
+    def remove_note(self, note):
+        if note in self.notes:
+            self.notes.remove(note)
+            print("Note removed successfully.")
+        else:
+            print("Note not found in the list.")
+        
     def save_notes(self):
         with open("notes_save.csv", "w", newline='') as fd:
             fields = ["author", "title", "note", "tags", "date"]

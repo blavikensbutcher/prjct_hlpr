@@ -8,7 +8,6 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import FuzzyWordCompleter
 from prompt_toolkit.styles import Style
 
-# from decorators.input_error import input_error
 from src.notes import Note
 
 def input_error(func):
@@ -208,6 +207,7 @@ def handle_show_all():
 def handle_search(query):
     return ADDRESS_BOOK.search(query)
 
+  
 @input_error
 def handle_open():
     global ADDRESS_BOOK
