@@ -7,6 +7,7 @@ from prompt_toolkit.completion import FuzzyWordCompleter
 from prompt_toolkit.styles import Style
 
 from src.decorators.input_error import input_error
+from src.notes import Note
 
 
 @input_error
