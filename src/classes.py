@@ -5,6 +5,7 @@ from datetime import date, datetime
 
 from prettytable import PrettyTable
 
+
 class Field:
     def __init__(self, value):
         self.value = value
@@ -127,10 +128,6 @@ class Record:
         phones_str = "; ".join(str(phone) for phone in self.phones)
         return f"Contact name: {self.name}, phones: {phones_str}, birthday: {self.birthday}, email: {self.email}"
 
-
-class PrettyTable:
-    def add_row(self, param):
-        pass
 
 
 class AddressBook(UserDict):
