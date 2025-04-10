@@ -207,6 +207,7 @@ def handle_show_all():
 def handle_search(query):
     return ADDRESS_BOOK.search(query)
 
+  
 @input_error
 def handle_open():
     global ADDRESS_BOOK
