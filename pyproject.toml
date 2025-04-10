@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "prjct-hlpr"
+version = "0.1.0"
+description = ""
+authors = ["blavikensbutcher <v.pidnebesnyi@omisoft.net>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+setuptools = "^78.1.0"
+prompt-toolkit = "^3.0.50"
+prettytable = "^3.16.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
