@@ -1,7 +1,8 @@
 import os
+from datetime import datetime
 
-# from classes import *
-# from notes import *
+from classes import *
+from notes import *
 from prettytable import PrettyTable
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import FuzzyWordCompleter
@@ -77,7 +78,30 @@ def handle_add(name, phone):
 
 @input_error
 def handle_change(change, name, new, newphone=None):
-    pass
+    record = ADDRESS_BOOK.find(name)
+    if record is not None:
+        if change == "email":
+            try:
+                record.change_email(new)
+                return f"Email for contact {name} is set as {new}"
+            except ValueError:
+                return "Invalid email"
+        elif change == "birthday":
+            try:
+                record.change_birthday(new)
+                return f"Birthday for contact {name} is set to {new}"
+            except ValueError:
+                return "Please enter the date in DD.MM.YYYY format."
+        elif change == "phone":
+            try:
+                record.edit_phone(new, newphone)
+                return f"Phone number for contact {change} changed to {newphone}"
+            except ValueError:
+                return "Invalid phone, please enter the phone in XXXXXXXXXX format."
+        else:
+            return "Unknown command. Please try again."
+    else:
+        raise KeyError
 
 
 @input_error
@@ -95,22 +119,58 @@ def handle_set_email(name, email):
 
 @input_error
 def handle_set_birthday(name, day):
-    pass
+    record = ADDRESS_BOOK.find(name)
+    if record is not None:
+        try:
+            record.set_birthday(day)
+            return f"Birthday for contact {name} is set to {day}"
+        except ValueError:
+            return "Please enter the date in DD.MM.YYYY format."
+        except IndexError:
+            return "Birthday is already set for this contact, use the 'change' command"
+    else:
+        raise KeyError
 
 
 @input_error
 def days_to_birthday(name):
-    pass
+    record = ADDRESS_BOOK.find(name)
+    if record is not None:
+        return record.days_to_birthday()
+    else:
+        raise KeyError
 
 
 @input_error
 def handle_delete(name):
-    pass
+    record = ADDRESS_BOOK.find(name)
+    if record is not None:
+        ADDRESS_BOOK.delete(name)
+        return f"{name} deleted"
+    else:
+        raise KeyError
 
 
 @input_error
 def handle_remove(name, remove):
-    pass
+    record = ADDRESS_BOOK.find(name)
+    if record is not None:
+        if remove == "email":
+            record.remove_email()
+            return f"{remove} for {name} deleted"
+        elif remove == "birthday":
+            record.remove_birthday()
+            return f"{remove} for {name} deleted"
+        else:
+            try:
+                record.remove_phone(remove)
+                return f"{remove} for {name} deleted"
+            except ValueError:
+                return f"Phone number {remove} for contact {name} not found."
+            except IndexError:
+                return "You cannot delete a single phone number, add another one or use the command 'change'"
+    else:
+        raise KeyError
 
 
 @input_error
@@ -146,17 +206,50 @@ def handle_show_all():
 
 @input_error
 def handle_search(query):
-    pass
-
+    return ADDRESS_BOOK.search(query)
 
 @input_error
 def handle_open():
-    pass
+    global ADDRESS_BOOK
+    global NOTES_MANAGER
+    csv_file = "new_book.csv"
+    csv_file_notes = "notes_save.csv"
+    try:
+        ADDRESS_BOOK = AddressBook(csv_file)
+        NOTES_MANAGER = NoteManager(csv_file_notes)
+        return f"Address book opened from {csv_file}"
+    except FileNotFoundError:
+        ADDRESS_BOOK = AddressBook(None)
+        NOTES_MANAGER = NoteManager(None)
+        return "Starting with an empty address book."
 
 
 @input_error
 def handle_save(path_dir):
-    pass
+    global ADDRESS_BOOK
+    global NOTES_MANAGER
+    os.chdir(path_dir)
+    csv_file = "new_book.csv"
+    csv_file_notes = "notes_save.csv"
+    if ADDRESS_BOOK.csv_file is None and NOTES_MANAGER.csv_file is None:
+        ADDRESS_BOOK.csv_file = csv_file
+        ADDRESS_BOOK.save_to_disk()
+        NOTES_MANAGER.csv_file = csv_file_notes
+        NOTES_MANAGER.save_notes()
+    elif ADDRESS_BOOK.csv_file is None:
+        # Якщо ADDRESS_BOOK та NOTES_MANAGER створено без файлу, тобто AddressBook(None), то зберегти за замовченням
+        ADDRESS_BOOK.csv_file = csv_file
+        ADDRESS_BOOK.save_to_disk()
+        return f"Address book saved to to {ADDRESS_BOOK.csv_file}"
+    elif NOTES_MANAGER.csv_file is None:
+        # Якщо NOTES_MANAGER створено без файлу, тобто NoteManager(None), то зберегти за замовченням
+        NOTES_MANAGER.csv_file = csv_file_notes
+        NOTES_MANAGER.save_notes()
+    else:
+        # Якщо ADDRESS_BOOK та NOTES_MANAGER має вказаний файл, то перезаписати його
+        ADDRESS_BOOK.save_to_disk()
+        NOTES_MANAGER.save_notes()
+        return f"Address book and NOTES_MANAGER saved to {ADDRESS_BOOK.csv_file} , {NOTES_MANAGER.csv_file}"
 
 
 @input_error
@@ -198,7 +291,27 @@ def handle_add_tags(*args):
 
 @input_error
 def handle_show_birthday_list(date):
-    pass
+    records = ADDRESS_BOOK.data
+    date_now = datetime.now().date()
+
+    try:
+        target_date = datetime.strptime(date, "%d.%m.%Y").date()
+    except ValueError:
+        return "Date not correct, please input in the format DD.MM.YYYY"
+
+    users_within_range = ""
+
+    for key, value in records.items():
+        try:
+            user_birthday = datetime.strptime(
+                str(value.birthday), "%d.%m.%Y").replace(year=date_now.year).date()
+
+            if date_now <= user_birthday <= target_date:
+                users_within_range += f"{value.name}'s birthday is on {value.birthday}" + "\n"
+        except ValueError:
+            continue
+
+    return users_within_range
 
 
 @input_error
