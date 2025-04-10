@@ -1,0 +1,2 @@
+prettytable
+prompt_toolkit
