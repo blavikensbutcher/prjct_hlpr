@@ -127,8 +127,8 @@ def handle_show_birthday_list(date):
 
 @input_error
 def handle_search_note_by_tags(*args):
-    pass
-
+    tags = ",".join(args)
+    return NOTES_MANAGER.search_notes_by_tags(tags)
 
 @input_error
 def handle_clear_notes():
