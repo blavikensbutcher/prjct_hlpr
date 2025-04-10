@@ -61,7 +61,7 @@ def handle_show_all():
 
 @input_error
 def handle_search(query):
-    pass
+    return ADDRESS_BOOK.search(query)
 
 
 @input_error
