@@ -646,8 +646,8 @@ def main():
         global NOTES_MANAGER
         handle_open()
         current_directory = os.getcwd()
-        # show_access_granted()
-        # handle_hello()
+        show_access_granted()
+        handle_hello()
 
         while True:
             user_input = get_user_input()
