@@ -228,52 +228,6 @@ def handle_add(name, phone):
             return f"Phone number {phone} added for contact {name}"
         except ValueError:
             return "Invalid phone"
-        
-# def handle_add(name, phone):
-#     if name not in ADDRESS_BOOK.data.keys():
-#         record = Record(name)
-#         try:
-#             record.add_phone(phone)
-#             ADDRESS_BOOK.add_record(record)
-
-#             table = PrettyTable(["name", "phones", "birthday", "email"])
-#             table.align = "l"
-
-#             answer = input("Would you add birthday or email? (Y/N) - ").lower()
-#             if answer == "y":
-#                 data = input(
-#                     "Enter birthday and email separated by space (e.g., 01.01.2000 email@example.com): "
-#                 ).split()
-#                 data.sort()
-#                 if len(data) == 2:
-#                     birthday, email = data
-#                     handle_set_email(name, email)
-#                     handle_set_birthday(name, birthday)
-#                     table.add_row([name, phone, birthday, email])
-#                     return table
-#                 elif len(data) == 1:
-#                     if "@" in data[0]:
-#                         handle_set_email(name, data[0])
-#                         table.add_row([name, phone, None, data[0]])
-#                         return table
-#                     elif data[0].count(".") == 2:
-#                         handle_set_birthday(name, data[0])
-#                         table.add_row([name, phone, data[0], None])
-#                         return table
-#                 print("Invalid input.")
-#             elif answer != "n":
-#                 print("Invalid input.")
-#             table.add_row([name, phone, None, None])
-#             return table
-#         except ValueError:
-#             return "Invalid phone"
-#     else:
-#         record = ADDRESS_BOOK.find(name)
-#         try:
-#             record.add_phone(phone)
-#             return f"Phone number {phone} added for contact {name}"
-#         except ValueError:
-#             return "Invalid phone"
 
 @input_error
 def handle_change(change, name, new, newphone=None):
