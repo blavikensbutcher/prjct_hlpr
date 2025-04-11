@@ -1,10 +1,11 @@
 import os
+import colorama   
 import sys
 import time
 from datetime import datetime
 from random import random, choice
 
-from prettytable import PrettyTable
+# from prettytable import PrettyTable
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import FuzzyWordCompleter
 from prompt_toolkit.styles import Style as PromptStyle
@@ -13,7 +14,7 @@ from colorama import init, Fore, Style as ColoramaStyle
 from src.classes import AddressBook, Record
 from src.decorators.input_error import input_error
 from src.notes import Note, NoteManager
-
+from src.format import format_table
 
 GREEN = "\033[92m"
 RESET = "\033[0m"
@@ -180,44 +181,44 @@ def handle_hello():
     matrix_rain()
     typewriter("Enter a command: (add, edit, help, exit): ", 0.01)
 
-
 @input_error
 def handle_add(name, phone):
+    colorama.init(autoreset=True)
+
+    headers = ["name", "phones", "birthday", "email"]
+    colors = [colorama.Fore.YELLOW, colorama.Fore.GREEN, colorama.Fore.BLUE, colorama.Fore.MAGENTA]
+
     if name not in ADDRESS_BOOK.data.keys():
         record = Record(name)
         try:
             record.add_phone(phone)
             ADDRESS_BOOK.add_record(record)
-
-            table = PrettyTable(["name", "phones", "birthday", "email"])
-            table.align = "l"
-
+            birthday = None
+            email = None
             answer = input("Would you add birthday or email? (Y/N) - ").lower()
             if answer == "y":
-                data = input(
-                    "Enter birthday and email separated by space (e.g., 01.01.2000 email@example.com): "
-                ).split()
+                data = input("Enter birthday and email separated by space (e.g., 01.01.2000 email@example.com): ").split()
                 data.sort()
                 if len(data) == 2:
                     birthday, email = data
                     handle_set_email(name, email)
                     handle_set_birthday(name, birthday)
-                    table.add_row([name, phone, birthday, email])
-                    return table
                 elif len(data) == 1:
                     if "@" in data[0]:
-                        handle_set_email(name, data[0])
-                        table.add_row([name, phone, None, data[0]])
-                        return table
+                        email = data[0]
+                        handle_set_email(name, email)
                     elif data[0].count(".") == 2:
-                        handle_set_birthday(name, data[0])
-                        table.add_row([name, phone, data[0], None])
-                        return table
-                print("Invalid input.")
+                        birthday = data[0]
+                        handle_set_birthday(name, birthday)
+                    else:
+                        print("Invalid input.")
+                elif len(data) > 2:
+                    print("Too many arguments.")
             elif answer != "n":
                 print("Invalid input.")
-            table.add_row([name, phone, None, None])
-            return table
+
+            return format_table([[name, phone, birthday or "", email or ""]], headers, colors)
+
         except ValueError:
             return "Invalid phone"
     else:
@@ -227,7 +228,52 @@ def handle_add(name, phone):
             return f"Phone number {phone} added for contact {name}"
         except ValueError:
             return "Invalid phone"
+        
+# def handle_add(name, phone):
+#     if name not in ADDRESS_BOOK.data.keys():
+#         record = Record(name)
+#         try:
+#             record.add_phone(phone)
+#             ADDRESS_BOOK.add_record(record)
 
+#             table = PrettyTable(["name", "phones", "birthday", "email"])
+#             table.align = "l"
+
+#             answer = input("Would you add birthday or email? (Y/N) - ").lower()
+#             if answer == "y":
+#                 data = input(
+#                     "Enter birthday and email separated by space (e.g., 01.01.2000 email@example.com): "
+#                 ).split()
+#                 data.sort()
+#                 if len(data) == 2:
+#                     birthday, email = data
+#                     handle_set_email(name, email)
+#                     handle_set_birthday(name, birthday)
+#                     table.add_row([name, phone, birthday, email])
+#                     return table
+#                 elif len(data) == 1:
+#                     if "@" in data[0]:
+#                         handle_set_email(name, data[0])
+#                         table.add_row([name, phone, None, data[0]])
+#                         return table
+#                     elif data[0].count(".") == 2:
+#                         handle_set_birthday(name, data[0])
+#                         table.add_row([name, phone, data[0], None])
+#                         return table
+#                 print("Invalid input.")
+#             elif answer != "n":
+#                 print("Invalid input.")
+#             table.add_row([name, phone, None, None])
+#             return table
+#         except ValueError:
+#             return "Invalid phone"
+#     else:
+#         record = ADDRESS_BOOK.find(name)
+#         try:
+#             record.add_phone(phone)
+#             return f"Phone number {phone} added for contact {name}"
+#         except ValueError:
+#             return "Invalid phone"
 
 @input_error
 def handle_change(change, name, new, newphone=None):
@@ -336,32 +382,18 @@ def handle_phone(name):
 
 @input_error
 def handle_show_all():
+    colorama.init(autoreset=True)
     if not ADDRESS_BOOK.data:
-        return "The address book is empty."
-
-    table = PrettyTable(["Name", "Phones", "Birthday", "Email"])
-    table.align = "l"
-
-    total_contacts = len(ADDRESS_BOOK.data)
-
-    for idx, (name, record) in enumerate(ADDRESS_BOOK.data.items()):
-        phones = "\n".join(map(str, record.phones))
-        birthday = record.birthday if record.birthday else ""
+        return colorama.Fore.RED + "The address book is empty." + colorama.Style.RESET_ALL
+    headers = ["Name", "Phones", "Birthday", "Email"]
+    colors = [colorama.Fore.YELLOW, colorama.Fore.GREEN, colorama.Fore.BLUE, colorama.Fore.MAGENTA]
+    rows = []
+    for name, record in ADDRESS_BOOK.data.items():
+        phones = "\n".join(map(str, record.phones)) if record.phones else ""
+        birthday = str(record.birthday) if record.birthday else ""
         email = record.email if record.email else ""
-        table.add_row(
-            [
-                name,
-                phones,
-                birthday if birthday != "" else None,
-                email if email != "" else None,
-            ]
-        )
-        # Add separator line if it's not the last contact
-        if idx < total_contacts - 1:
-            table.add_row(["-" * 20, "-" * 20, "-" * 20, "-" * 20])
-
-    return str(table)
-
+        rows.append([name, phones, birthday, email])
+    return format_table(rows, headers, colors)
 
 @input_error
 def handle_search(query):
@@ -503,7 +535,6 @@ def handle_search_note_by_tags(*args):
     tags = ",".join(args)
     return NOTES_MANAGER.search_notes_by_tags(tags)
 
-
 @input_error
 def handle_clear_notes():
     NOTES_MANAGER.clear_notes()
@@ -513,8 +544,8 @@ def handle_clear_notes():
 def show_all_notes():
     NOTES_MANAGER.print_notes()
 
-
 def show_help():
+    colorama.init(autoreset=True)
     help_message = """
         hello: Вивести вітальне повідомлення.
         save: Зберегти адресну книгу.
@@ -525,31 +556,27 @@ def show_help():
         show birthday list [дата] : Показати список днів народженя до певної дати
         change phone [іʼмя] [старий телефон] [новий телефон]: Змінити обраний телефон.
         change email/birthday [іʼмя] [нові дані]: Змінити дані існуючого контакту.
-        remove [іʼмя] [телефон/birthday/email]: видалити інформацію для контакту.
+        remove [іʼмя] [телефон/birthday/email]: Видалити інформацію для контакту.
         info [іʼмя]: Вивести інформацію про контакт.
         delete [іʼмя]: Видалити контакт з адресної книги.
         show all: Відобразити всі контакти в адресній книзі.
         search [запит]: Пошук в адресній книзі за символами.
         create note [автор] [назва] : Додає нотатку
         append note tags [назва], [тег_1 тег_2...] : Додає тег до нотатків
-        showing all notes : Показати усі нотатки
+        show notes : Показати усі нотатки
         deletion note [назва] : Видаляє нотатку
         clear notes : Видаляє усі нотатки
-        searching note by tags [тег_1 тег_2...] : Шукати по тегам
+        searching note by tags [тег_1 тег_2...] : Шукати по тєгам
         """
+    headers = ["Команда", "Опис"]
+    colors = [colorama.Fore.YELLOW, colorama.Fore.GREEN]
+    rows = []
+    for line in help_message.strip().splitlines():
+        if ":" in line:
+            command, desc = line.strip().split(":", 1)
+            rows.append([command.strip(), desc.strip()])
 
-    commands = [line.strip() for line in help_message.split("\n") if line.strip()]
-    table = PrettyTable(["Доступні команди", "Опис"])
-    table.align["Доступні команди"] = "l"
-    table.align["Опис"] = "l"
-
-    for command in commands:
-        command_parts = command.split(":", 1)
-        if len(command_parts) == 2:
-            table.add_row([command_parts[0].strip(), command_parts[1].strip()])
-
-    return table
-
+    return format_table(rows, headers, colors)
 
 COMMANDS = {
     "help": show_help,
@@ -568,7 +595,7 @@ COMMANDS = {
     "search": handle_search,
     "append note tags": handle_add_tags,
     "create note": handle_add_note,
-    "show all notes": show_all_notes,
+    "show notes": show_all_notes,
     "deletion note": handle_delete_note,
     "clear notes": handle_clear_notes,
     "show birthday list": handle_show_birthday_list,
@@ -593,7 +620,7 @@ command_list = [
     "search",
     "append note tags",
     "create note",
-    "show all notes",
+    "show notes",
     "deletion note",
     "clear notes",
     "show birthday list",
@@ -665,8 +692,8 @@ def main():
         global NOTES_MANAGER
         handle_open()
         current_directory = os.getcwd()
-        show_access_granted()
-        handle_hello()
+        # show_access_granted()
+        # handle_hello()
 
         while True:
             user_input = get_user_input()
