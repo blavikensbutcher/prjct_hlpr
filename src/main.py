@@ -15,6 +15,7 @@ from src.notes import Note, NoteManager
 def handle_hello():
     return "How can I help you?"
 
+
 @input_error
 def handle_add(name, phone):
     if name not in ADDRESS_BOOK.data.keys():
@@ -218,7 +219,6 @@ def handle_open():
         return "Starting with an empty address book."
 
 
-
 @input_error
 def handle_save(path_dir):
     global ADDRESS_BOOK
@@ -284,6 +284,7 @@ def handle_delete_note(title):
         NOTES_MANAGER.remove_note(match)
     else:
         print("It's note is exist")
+
 
 @input_error
 def handle_add_tags(*args):
@@ -402,7 +403,7 @@ COMMANDS = {
     "search": handle_search,
     "append note tags": handle_add_tags,
     "create note": handle_add_note,
-    "showing all notes": show_all_notes,
+    "show all notes": show_all_notes,
     "deletion note": handle_delete_note,
     "clear notes": handle_clear_notes,
     "show birthday list": handle_show_birthday_list,
@@ -427,7 +428,7 @@ command_list = [
     "search",
     "append note tags",
     "create note",
-    "showing all notes",
+    "show all notes",
     "deletion note",
     "clear notes",
     "show birthday list",
@@ -435,7 +436,7 @@ command_list = [
 
 custom_style = Style.from_dict(
     {
-        "prompt": "bg:#708090 #ffffff",
+        "prompt": "bg:darkgreen #ffffff",
         "completion-menu.completion": "bg:#708090 #ffffff",
         "completion-menu.completion.current": "bg:#ffffff #2E8B57",
         "completion-menu.border": "bg:#008000 #ffffff",
