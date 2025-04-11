@@ -2,8 +2,8 @@ from prettytable import PrettyTable
 from datetime import datetime
 import csv
 import re
-
-
+import colorama
+from src.format import format_table
 class Note:
 
     def __init__(self, author, title, note, tags=None, date=None):
@@ -120,13 +120,20 @@ class NoteManager:
         print("Notes cleared successfully.")
 
     def print_notes(self):
+        colorama.init(autoreset=True)
         if not self.notes:
-            print("No notes available.")
-        else:
-            table = PrettyTable(["Author", "Title", "Note", "Tags", "Date"])
-            table.align = "l"
-            for note in self.notes:
-                table.add_row(
-                    [note.author, note.title, note.note, note.tags, note.date]
-                )
-            print(table)
+            print(colorama.Fore.RED + "No notes available." + colorama.Style.RESET_ALL)
+            return
+        headers = ["Author", "Title", "Note", "Tags", "Date"]
+        colors = [
+            colorama.Fore.YELLOW,   # Author
+            colorama.Fore.CYAN,     # Title
+            colorama.Fore.GREEN,    # Note
+            colorama.Fore.MAGENTA,  # Tags
+            colorama.Fore.BLUE      # Date
+        ]
+        rows = [
+            [note.author, note.title, note.note, ", ".join(note.tags), note.date]
+            for note in self.notes
+        ]
+        print(format_table(rows, headers, colors))
