@@ -15,7 +15,6 @@ from src.notes import Note, NoteManager
 def handle_hello():
     return "How can I help you?"
 
-
 @input_error
 def handle_add(name, phone):
     if name not in ADDRESS_BOOK.data.keys():
