@@ -285,7 +285,6 @@ def handle_delete_note(title):
     else:
         print("It's note is exist")
 
-
 @input_error
 def handle_add_tags(*args):
     title = args[0]

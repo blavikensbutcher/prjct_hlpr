@@ -50,6 +50,19 @@ class NoteManager:
         self.notes.append(note)
         print("Note added successfully.")
 
+       
+    def add_tag(self, note, tag):
+        if note in self.notes:
+            if note.tags == None:
+                note.tags = tag
+                print("Tag added successfully.")
+            else:
+                note.tags += ", " + tag
+                print("Tag added successfully.")
+        else:
+            print("Note not found in the list.")
+            
+
     def search_notes(self, info):
         result = []
         for note in self.notes:
@@ -67,12 +80,7 @@ class NoteManager:
             table.add_row([data.author, data.title, data.note, data.tags, data.date])
         print(table)
 
-    def add_tag(self, *args):
-        pass
-
-    def search_notes_by_tags(self, *args):
-        pass
-
+        
     def remove_note(self, note):
         if note in self.notes:
             self.notes.remove(note)
