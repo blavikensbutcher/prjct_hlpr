@@ -1,4 +1,5 @@
 import os
+import colorama
 from datetime import datetime
 
 from classes import *
@@ -185,23 +186,43 @@ def handle_show_all():
     if not ADDRESS_BOOK.data:
         return "The address book is empty."
 
-    table = PrettyTable(['Name', 'Phones', 'Birthday', 'Email'])
-    table.align = 'l'
+    header = ["Name", "Phones", "Birthday", "Email"]
+    rows = []
 
-    total_contacts = len(ADDRESS_BOOK.data)
-
-    for idx, (name, record) in enumerate(ADDRESS_BOOK.data.items()):
+    for name, record in ADDRESS_BOOK.data.items():
         phones = "\n".join(map(str, record.phones))
-        birthday = record.birthday if record.birthday else ""
-        email = record.email if record.email else ""
-        table.add_row([name, phones, birthday if birthday != "" else None, email if email != "" else None])
+        birthday = record.birthday or ""
+        email = record.email or ""
+        rows.append([name, phones, birthday, email])
 
-        # Add separator line if it's not the last contact
-        if idx < total_contacts - 1:
-            table.add_row(["-" * 20, "-" * 20, "-" * 20, "-" * 20])
+    # Вычисляем максимальную ширину для каждой колонки
+    col_widths = [max(len(str(row[i])) for row in ([header] + rows)) for i in range(4)]
 
-    return str(table)
+    def fmt_row(row, sep="║"):
+        return sep + sep.join(f" {str(cell):<{col_widths[i]}} " for i, cell in enumerate(row)) + sep
 
+    def line(char_left, char_mid, char_right, char_fill):
+        return char_left + char_mid.join(char_fill * (w + 2) for w in col_widths) + char_right
+
+    table = []
+
+    # Верхняя рамка
+    table.append(line("╔", "╦", "╗", "═"))
+    # Заголовок
+    table.append(fmt_row(header))
+    # Разделитель после заголовка
+    table.append(line("╠", "╬", "╣", "═"))
+
+    # Строки с данными
+    for i, row in enumerate(rows):
+        table.append(fmt_row(row))
+        if i < len(rows) - 1:
+            table.append(line("╟", "╫", "╢", "─"))  # Разделитель между строками
+
+    # Нижняя рамка
+    table.append(line("╚", "╩", "╝", "═"))
+
+    return "\n".join(table)
 
 @input_error
 def handle_search(query):
@@ -351,8 +372,9 @@ def handle_clear_notes():
 def show_all_notes():
     NOTES_MANAGER.print_notes()
 
-
 def show_help():
+    colorama.init(autoreset=True)  # Автоматически сбрасывать цвет
+
     help_message = """
         hello: Вивести вітальне повідомлення.
         save: Зберегти адресну книгу.
@@ -363,7 +385,7 @@ def show_help():
         show birthday list [дата] : Показати список днів народженя до певної дати
         change phone [іʼмя] [старий телефон] [новий телефон]: Змінити обраний телефон.
         change email/birthday [іʼмя] [нові дані]: Змінити дані існуючого контакту.
-        remove [іʼмя] [телефон/birthday/email]: видалити інформацію для контакту.
+        remove [іʼмя] [телефон/birthday/email]: Видалити інформацію для контакту.
         info [іʼмя]: Вивести інформацію про контакт.
         delete [іʼмя]: Видалити контакт з адресної книги.
         show all: Відобразити всі контакти в адресній книзі.
@@ -376,18 +398,47 @@ def show_help():
         searching note by tags [тег_1 тег_2...] : Шукати по тєгам
         """
 
-    commands = [line.strip() for line in help_message.split("\n") if line.strip()]
-    table = PrettyTable(["Доступні команди", "Опис"])
-    table.align["Доступні команди"] = "l"
-    table.align["Опис"] = "l"
+    commands = [line.strip() for line in help_message.strip().split('\n') if line.strip()]
+    rows = []
 
-    for command in commands:
-        command_parts = command.split(":", 1)
-        if len(command_parts) == 2:
-            table.add_row([command_parts[0].strip(), command_parts[1].strip()])
+    for cmd in commands:
+        parts = cmd.split(":", 1)
+        if len(parts) == 2:
+            command = parts[0].strip()
+            desc = parts[1].strip()
+            rows.append([command, desc])
 
-    return table
+    headers_plain = ["Доступні команди", "Опис"]
+    col_widths = [max(len(row[i]) for row in ([headers_plain] + rows)) for i in range(2)]
 
+    headers = headers_plain
+
+    def fmt_row(row, sep=f"{colorama.Fore.MAGENTA}║", color_cmd=colorama.Fore.YELLOW, color_desc=colorama.Fore.GREEN):
+        clean_cmd, clean_desc = row[0], row[1]
+        cmd_colored = f"{color_cmd}{clean_cmd}{colorama.Style.RESET_ALL}"
+        desc_colored = f"{color_desc}{clean_desc}{colorama.Style.RESET_ALL}"
+        return (
+            sep
+            + f" {cmd_colored}{' ' * (col_widths[0] - len(clean_cmd))} "
+            + sep
+            + f" {desc_colored}{' ' * (col_widths[1] - len(clean_desc))} "
+            + sep
+        )
+
+    def line(left, mid, right, fill):
+        return left + mid.join(fill * (w + 2) for w in col_widths) + right
+
+    table = []
+    table.append(colorama.Fore.MAGENTA + line("╔", "╦", "╗", "═") + colorama.Style.RESET_ALL)
+    table.append(fmt_row(headers, color_cmd=colorama.Fore.CYAN, color_desc=colorama.Fore.CYAN))
+    table.append(colorama.Fore.MAGENTA + line("╠", "╬", "╣", "═") + colorama.Style.RESET_ALL)
+
+    for row in rows:
+        table.append(fmt_row(row))
+
+    table.append(colorama.Fore.MAGENTA + line("╚", "╩", "╝", "═") + colorama.Style.RESET_ALL)
+
+    return "\n".join(table)
 
 COMMANDS = {
     "help": show_help,
