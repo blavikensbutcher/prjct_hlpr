@@ -233,16 +233,13 @@ def handle_save(path_dir):
         NOTES_MANAGER.csv_file = csv_file_notes
         NOTES_MANAGER.save_notes()
     elif ADDRESS_BOOK.csv_file is None:
-        # Якщо ADDRESS_BOOK та NOTES_MANAGER створено без файлу, тобто AddressBook(None), то зберегти за замовченням
         ADDRESS_BOOK.csv_file = csv_file
         ADDRESS_BOOK.save_to_disk()
         return f"Address book saved to to {ADDRESS_BOOK.csv_file}"
     elif NOTES_MANAGER.csv_file is None:
-        # Якщо NOTES_MANAGER створено без файлу, тобто NoteManager(None), то зберегти за замовченням
         NOTES_MANAGER.csv_file = csv_file_notes
         NOTES_MANAGER.save_notes()
     else:
-        # Якщо ADDRESS_BOOK та NOTES_MANAGER має вказаний файл, то перезаписати його
         ADDRESS_BOOK.save_to_disk()
         NOTES_MANAGER.save_notes()
         return f"Address book and NOTES_MANAGER saved to {ADDRESS_BOOK.csv_file} , {NOTES_MANAGER.csv_file}"
