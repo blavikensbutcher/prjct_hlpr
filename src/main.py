@@ -594,6 +594,8 @@ command_list = [
     "deletion note",
     "clear notes",
     "show birthday list",
+    "exit",
+    "close"
 ]
 
 
@@ -686,7 +688,6 @@ def run_with_simple_style():
         handle_open()
         current_directory = os.getcwd()
 
-        # Використовуємо простий стиль
         simple_style = PromptStyle.from_dict(
             {
                 "prompt": "bg:darkgreen #ffffff",
