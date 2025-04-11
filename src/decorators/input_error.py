@@ -12,4 +12,3 @@ def input_error(func):
             return "Invalid input. Please check your input."
 
     return wrapper
-
