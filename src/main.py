@@ -493,6 +493,9 @@ def run_with_matrix_style():
 
         while True:
             user_input = get_user_input()
+            if user_input == "save":
+                print(Fore.GREEN + handle_save(current_directory) + Fore.RESET)
+                continue
             if user_input in ["good bye", "close", "exit"]:
                 print(handle_save(current_directory))
                 print(Fore.GREEN + "Good bye" + Fore.RESET)
@@ -538,6 +541,9 @@ def run_with_simple_style():
 
         while True:
             user_input = simple_get_user_input()
+            if user_input == "save":
+                print(Fore.GREEN + handle_save(current_directory) + Fore.RESET)
+                continue
             if user_input in ["good bye", "close", "exit"]:
                 print(handle_save(current_directory))
                 print("Good bye!")
