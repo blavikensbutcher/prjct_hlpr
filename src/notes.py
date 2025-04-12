@@ -144,7 +144,7 @@ class NoteManager:
         if not self.notes:
             print(colorama.Fore.RED + "No notes available." + colorama.Style.RESET_ALL)
             return
-        headers = ["Author", "Title", "Note", "Tags", "Date"]
+        headers = ["Автор", "Назва", "Нотатка", "Теги", "Дата створення"]
         colors = [
             colorama.Fore.YELLOW,  # Author
             colorama.Fore.CYAN,  # Title
