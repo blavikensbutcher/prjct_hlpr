@@ -1,5 +1,5 @@
 import os
-import colorama   
+import colorama
 import sys
 import time
 from datetime import datetime
@@ -178,12 +178,18 @@ def handle_hello():
     matrix_rain()
     typewriter("Enter a command: (add, edit, help, exit): ", 0.01)
 
+
 @input_error
 def handle_add(name, phone):
     colorama.init(autoreset=True)
 
     headers = ["name", "phones", "birthday", "email"]
-    colors = [colorama.Fore.YELLOW, colorama.Fore.GREEN, colorama.Fore.BLUE, colorama.Fore.MAGENTA]
+    colors = [
+        colorama.Fore.YELLOW,
+        colorama.Fore.GREEN,
+        colorama.Fore.BLUE,
+        colorama.Fore.MAGENTA,
+    ]
 
     if name not in ADDRESS_BOOK.data.keys():
         record = Record(name)
@@ -194,7 +200,9 @@ def handle_add(name, phone):
             email = None
             answer = input("Would you add birthday or email? (Y/N) - ").lower()
             if answer == "y":
-                data = input("Enter birthday and email separated by space (e.g., 01.01.2000 email@example.com): ").split()
+                data = input(
+                    "Enter birthday and email separated by space (e.g., 01.01.2000 email@example.com): "
+                ).split()
                 data.sort()
                 if len(data) == 2:
                     birthday, email = data
@@ -214,7 +222,9 @@ def handle_add(name, phone):
             elif answer != "n":
                 print("Invalid input.")
 
-            return format_table([[name, phone, birthday or "", email or ""]], headers, colors)
+            return format_table(
+                [[name, phone, birthday or "", email or ""]], headers, colors
+            )
 
         except ValueError:
             return "Invalid phone"
@@ -225,6 +235,7 @@ def handle_add(name, phone):
             return f"Phone number {phone} added for contact {name}"
         except ValueError:
             return "Invalid phone"
+
 
 @input_error
 def handle_change(change, name, new, newphone=None):
@@ -335,9 +346,16 @@ def handle_phone(name):
 def handle_show_all():
     colorama.init(autoreset=True)
     if not ADDRESS_BOOK.data:
-        return colorama.Fore.RED + "The address book is empty." + colorama.Style.RESET_ALL
+        return (
+            colorama.Fore.RED + "The address book is empty." + colorama.Style.RESET_ALL
+        )
     headers = ["Name", "Phones", "Birthday", "Email"]
-    colors = [colorama.Fore.YELLOW, colorama.Fore.GREEN, colorama.Fore.BLUE, colorama.Fore.MAGENTA]
+    colors = [
+        colorama.Fore.YELLOW,
+        colorama.Fore.GREEN,
+        colorama.Fore.BLUE,
+        colorama.Fore.MAGENTA,
+    ]
     rows = []
     for name, record in ADDRESS_BOOK.data.items():
         phones = "\n".join(map(str, record.phones)) if record.phones else ""
@@ -345,6 +363,7 @@ def handle_show_all():
         email = record.email if record.email else ""
         rows.append([name, phones, birthday, email])
     return format_table(rows, headers, colors)
+
 
 @input_error
 def handle_search(query):
@@ -486,6 +505,7 @@ def handle_search_note_by_tags(*args):
     tags = ",".join(args)
     return NOTES_MANAGER.search_notes_by_tags(tags)
 
+
 @input_error
 def handle_clear_notes():
     NOTES_MANAGER.clear_notes()
@@ -494,6 +514,7 @@ def handle_clear_notes():
 @input_error
 def show_all_notes():
     NOTES_MANAGER.print_notes()
+
 
 def show_help():
     colorama.init(autoreset=True)
@@ -517,7 +538,7 @@ def show_help():
         show notes : Показати усі нотатки
         deletion note [назва] : Видаляє нотатку
         clear notes : Видаляє усі нотатки
-        searching note by tags [тег_1 тег_2...] : Шукати по тєгам
+        searching note by tags [тег_1 тег_2...] : Шукати по тегам
         """
     headers = ["Команда", "Опис"]
     colors = [colorama.Fore.YELLOW, colorama.Fore.GREEN]
@@ -528,6 +549,7 @@ def show_help():
             rows.append([command.strip(), desc.strip()])
 
     return format_table(rows, headers, colors)
+
 
 COMMANDS = {
     "help": show_help,
@@ -576,7 +598,7 @@ command_list = [
     "clear notes",
     "show birthday list",
     "exit",
-    "close"
+    "close",
 ]
 
 
