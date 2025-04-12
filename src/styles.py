@@ -32,14 +32,14 @@ def typewriter(text, delay=0.02):
 def glitch_text(text, glitch_prob=0.1):
     result = ""
     for char in text:
-        if random() < glitch_prob:
+        if random.random() < glitch_prob:
 
             effect = random.choice(
                 [
                     lambda c: f"{Fore.LIGHTGREEN_EX}{c}{ColoramaStyle.RESET_ALL}",
                     lambda c: f"{Fore.GREEN}{c}{ColoramaStyle.RESET_ALL}",
                     lambda c: f"{Fore.WHITE}{c}{ColoramaStyle.RESET_ALL}",
-                    lambda c: f"\033[38;2;0;{int(200*random())+55};0m{c}{ColoramaStyle.RESET_ALL}",
+                    lambda c: f"\033[38;2;0;{int(200*random.random())+55};0m{c}{ColoramaStyle.RESET_ALL}",
                     lambda c: "".join(
                         f"{Fore.GREEN}{random.choice(matrix_chars)}{ColoramaStyle.RESET_ALL}"
                         for _ in range(1, 3)
@@ -59,7 +59,7 @@ def typewriter_with_glitch(text, delay=0.02, glitch_prob=0.05):
     for char in glitched_text:
         sys.stdout.write(char)
         sys.stdout.flush()
-        time.sleep(delay * (0.5 + random() * 1.0))
+        time.sleep(delay * (0.5 + random.random() * 1.0))
     print()
 
 
@@ -95,7 +95,7 @@ def matrix_rain(columns=100, lines=50, speed=0.05):
     try:
 
         streams = [
-            {"pos": i, "speed": random() * 0.1 + 0.02, "length": int(random() * 5) + 3}
+            {"pos": i, "speed": random.random() * 0.1 + 0.02, "length": int(random.random() * 5) + 3}
             for i in range(0, columns, 3)
         ]
 
@@ -126,15 +126,15 @@ def matrix_rain(columns=100, lines=50, speed=0.05):
 
 def floating_message(messages, width=80, height=15):
     positions = [
-        (int(random() * width), int(random() * height)) for _ in range(len(messages))
+        (int(random.random() * width), int(random.random() * height)) for _ in range(len(messages))
     ]
-    vectors = [(random() * 2 - 1, random() * 2 - 1) for _ in range(len(messages))]
+    vectors = [(random.random() * 2 - 1, random.random() * 2 - 1) for _ in range(len(messages))]
 
     try:
         for frame in range(100):
 
             matrix = [
-                [random.choice(matrix_chars) if random() < 0.05 else " " for _ in range(width)]
+                [random.choice(matrix_chars) if random.random() < 0.05 else " " for _ in range(width)]
                 for _ in range(height)
             ]
 
@@ -173,7 +173,7 @@ def show_access_granted():
 
     print(f"{Fore.CYAN}Biometric authentication: {ColoramaStyle.RESET_ALL}", end="")
     for _ in range(20):
-        sys.stdout.write(choice(["▓", "▒", "░"]))
+        sys.stdout.write(random.choice(["▓", "▒", "░"]))
         sys.stdout.flush()
         time.sleep(0.1)
     print(f" {Fore.GREEN}[SUCCESS]{ColoramaStyle.RESET_ALL}")
