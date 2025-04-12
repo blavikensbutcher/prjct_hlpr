@@ -715,7 +715,7 @@ def run_with_simple_style():
 def main():
     parser = argparse.ArgumentParser(description="Assistant Application")
     parser.add_argument("--matrix", action="store_true", help="Run with Matrix style")
-    print(sys.argv)
+
     if len(sys.argv) > 1:
         args = parser.parse_args()
         if args.matrix:
