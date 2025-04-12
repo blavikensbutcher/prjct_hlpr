@@ -137,3 +137,31 @@ class NoteManager:
             for note in self.notes
         ]
         print(format_table(rows, headers, colors))
+        
+    def search_notes_by_tags(self, search_tags: str):
+        colorama.init(autoreset=True)
+        if not search_tags:
+            return colorama.Fore.RED + "Nothing to show" + colorama.Style.RESET_ALL
+        search_tag_list = [x.strip() for x in search_tags.split(",")]
+        result = set()
+        for note in self.notes:
+            if any(tag in note.tags for tag in search_tag_list):
+                result.add(note)
+        if not result:
+            return colorama.Fore.RED + "Nothing to show" + colorama.Style.RESET_ALL
+
+        headers = ["Author", "Title", "Note", "Tags", "Date"]
+        colors = [
+            colorama.Fore.YELLOW,
+            colorama.Fore.CYAN,
+            colorama.Fore.GREEN,
+            colorama.Fore.MAGENTA,
+            colorama.Fore.BLUE
+        ]
+
+        rows = [
+            [n.author, n.title, n.note, ", ".join(n.tags), str(n.date)]
+            for n in result
+        ]
+
+        return format_table(rows, headers, colors)
