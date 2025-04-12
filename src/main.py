@@ -4,6 +4,7 @@ import sys
 import time
 from datetime import datetime
 from random import random, choice
+import argparse
 
 # from prettytable import PrettyTable
 from prompt_toolkit import prompt
@@ -101,7 +102,7 @@ def show_matrix_intro():
     time.sleep(0.5)
 
 
-def matrix_rain(columns=80, lines=20, speed=0.05):
+def matrix_rain(columns=100, lines=50, speed=0.05):
     try:
 
         streams = [
@@ -135,21 +136,19 @@ def matrix_rain(columns=80, lines=20, speed=0.05):
 
 
 def floating_message(messages, width=80, height=15):
-    # Створюємо декілька повідомлень, що "плавають" серед матричного дощу
     positions = [
         (int(random() * width), int(random() * height)) for _ in range(len(messages))
     ]
     vectors = [(random() * 2 - 1, random() * 2 - 1) for _ in range(len(messages))]
 
     try:
-        for frame in range(100):  # Обмежуємо кількість кадрів
-            # Створюємо матрицю
+        for frame in range(100):
+
             matrix = [
                 [choice(matrix_chars) if random() < 0.05 else " " for _ in range(width)]
                 for _ in range(height)
             ]
 
-            # Додаємо повідомлення
             for i, message in enumerate(messages):
                 x, y = int(positions[i][0]), int(positions[i][1])
                 if 0 <= y < height:
@@ -159,13 +158,11 @@ def floating_message(messages, width=80, height=15):
                                 x + j
                             ] = f"{Fore.WHITE}{ColoramaStyle.BRIGHT}{char}{ColoramaStyle.RESET_ALL}"
 
-                # Оновлюємо позицію
                 positions[i] = (
                     (positions[i][0] + vectors[i][0]) % width,
                     (positions[i][1] + vectors[i][1]) % height,
                 )
 
-            # Виводимо матрицю
             clear_screen()
             for row in matrix:
                 print(f"{Fore.GREEN}" + "".join(row) + f"{ColoramaStyle.RESET_ALL}")
@@ -578,6 +575,8 @@ command_list = [
     "deletion note",
     "clear notes",
     "show birthday list",
+    "exit",
+    "close"
 ]
 
 
@@ -599,7 +598,6 @@ def get_user_input():
 
 def show_access_granted():
     clear_screen()
-    attempts = 3
 
     typewriter_with_glitch("MATRIX: SECURITY SYSTEM", 0.03)
     typewriter_with_glitch("........................", 0.05)
@@ -608,7 +606,6 @@ def show_access_granted():
     typewriter_with_glitch("Scanning in progress...", 0.03)
     time.sleep(1)
 
-    # Імітація сканування відбитків
     print(f"{Fore.CYAN}Biometric authentication: {ColoramaStyle.RESET_ALL}", end="")
     for _ in range(20):
         sys.stdout.write(choice(["▓", "▒", "░"]))
@@ -617,7 +614,6 @@ def show_access_granted():
     print(f" {Fore.GREEN}[SUCCESS]{ColoramaStyle.RESET_ALL}")
     time.sleep(0.3)
 
-    # Імітація розшифрування
     print(f"{Fore.CYAN}Access decryption: {ColoramaStyle.RESET_ALL}", end="")
     for i in range(10):
         progress = i * 10
@@ -628,7 +624,6 @@ def show_access_granted():
         time.sleep(0.2)
     print(f"\r{Fore.CYAN}Access decryption: {Fore.GREEN}100%{ColoramaStyle.RESET_ALL}")
 
-    # Доступ надано
     time.sleep(0.5)
     print("\n" + "=" * 40)
     print(f"{Fore.GREEN}{ColoramaStyle.BRIGHT}ACCESS GRANTED{ColoramaStyle.RESET_ALL}")
@@ -639,8 +634,7 @@ def show_access_granted():
     time.sleep(1.5)
 
 
-@input_error
-def main():
+def run_with_matrix_style():
     try:
         global ADDRESS_BOOK
         global NOTES_MANAGER
@@ -651,6 +645,50 @@ def main():
 
         while True:
             user_input = get_user_input()
+            if user_input in ["good bye", "close", "exit"]:
+                print(handle_save(current_directory))
+                print(Fore.GREEN + "Good bye" + Fore.RESET)
+                break
+            for command in COMMANDS.keys():
+                if user_input.startswith(command):
+                    args = user_input[len(command) :].split()
+                    res = COMMANDS[command](*args)
+                    print(res) if res is not None else ...
+                    break
+            else:
+                print("Unknown command. Please try again.")
+    except KeyboardInterrupt:
+        print(Fore.GREEN + "Good bye\n" + Fore.RESET)
+        exit()
+
+
+def run_with_simple_style():
+    try:
+        global ADDRESS_BOOK
+        global NOTES_MANAGER
+        handle_open()
+        current_directory = os.getcwd()
+
+        simple_style = PromptStyle.from_dict(
+            {
+                "prompt": "bg:darkgreen #ffffff",
+                "completion-menu.completion": "bg:#708090 #ffffff",
+                "completion-menu.completion.current": "bg:#ffffff #2E8B57",
+                "completion-menu.border": "bg:#008000 #ffffff",
+            }
+        )
+
+        simple_completer = FuzzyWordCompleter(command_list)
+
+        def simple_get_user_input():
+            return prompt(
+                "Enter a command: ", completer=simple_completer, style=simple_style
+            ).lower()
+
+        print("How can I help you?")
+
+        while True:
+            user_input = simple_get_user_input()
             if user_input in ["good bye", "close", "exit"]:
                 print(handle_save(current_directory))
                 print("Good bye!")
@@ -664,8 +702,26 @@ def main():
             else:
                 print("Unknown command. Please try again.")
     except KeyboardInterrupt:
-        prompt(message="Good bye!", style=custom_style)
+        print("Good bye!")
         exit()
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Assistant Application")
+    parser.add_argument("--matrix", action="store_true", help="Run with Matrix style")
+
+    if len(sys.argv) > 1:
+        args = parser.parse_args()
+        if args.matrix:
+            run_with_matrix_style()
+        else:
+            run_with_simple_style()
+    else:
+
+        if "matrix" in sys.argv[0].lower():
+            run_with_matrix_style()
+        else:
+            run_with_simple_style()
 
 
 if __name__ == "__main__":
