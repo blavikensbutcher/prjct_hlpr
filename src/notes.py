@@ -4,6 +4,8 @@ import csv
 import re
 import colorama
 from src.format import format_table
+
+
 class Note:
 
     def __init__(self, author, title, note, tags=None, date=None):
@@ -77,8 +79,7 @@ class NoteManager:
         for data in result:
             table.add_row([data.author, data.title, data.note, data.tags, data.date])
         print(table)
-        
-        
+
     def search_notes_by_tags(self, search_tags: str):
         if search_tags:
             search_tag_list = [x.strip() for x in search_tags.split(",")]
@@ -87,14 +88,15 @@ class NoteManager:
                 for tag in search_tag_list:
                     if tag in note.tags:
                         result.add(note)
-            table = PrettyTable(['Author', 'Title', 'Note', 'Tags', 'Date'])
-            table.align = 'l'
+            table = PrettyTable(["Author", "Title", "Note", "Tags", "Date"])
+            table.align = "l"
             for data in result:
-                table.add_row([data.author, data.title, data.note, data.tags, data.date])
+                table.add_row(
+                    [data.author, data.title, data.note, data.tags, data.date]
+                )
             return table if len(result) != 0 else "Nothing to show"
         else:
             return "Nothing to show"
-        
 
     def remove_note(self, note):
         if note in self.notes:
@@ -142,13 +144,13 @@ class NoteManager:
         if not self.notes:
             print(colorama.Fore.RED + "No notes available." + colorama.Style.RESET_ALL)
             return
-        headers = ["Author", "Title", "Note", "Tags", "Date"]
+        headers = ["Автор", "Назва", "Нотатка", "Теги", "Дата створення"]
         colors = [
-            colorama.Fore.YELLOW,   # Author
-            colorama.Fore.CYAN,     # Title
-            colorama.Fore.GREEN,    # Note
+            colorama.Fore.YELLOW,  # Author
+            colorama.Fore.CYAN,  # Title
+            colorama.Fore.GREEN,  # Note
             colorama.Fore.MAGENTA,  # Tags
-            colorama.Fore.BLUE      # Date
+            colorama.Fore.BLUE,  # Date
         ]
         rows = [
             [note.author, note.title, note.note, ", ".join(note.tags), note.date]
