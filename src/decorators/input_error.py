@@ -1,4 +1,3 @@
-
 def input_error(func):
     def wrapper(*args):
         try:
@@ -13,4 +12,3 @@ def input_error(func):
             return "Invalid input. Please check your input."
 
     return wrapper
-

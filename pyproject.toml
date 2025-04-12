@@ -1,17 +1,26 @@
 [tool.poetry]
-name = "prjct-hlpr"
+name = "prjct_hlpr"
 version = "0.1.0"
 description = ""
 authors = ["blavikensbutcher <v.pidnebesnyi@omisoft.net>"]
 readme = "README.md"
+packages = [
+    {include = "src"}
+]
 
 [tool.poetry.dependencies]
 python = "^3.12"
 setuptools = "^78.1.0"
 prompt-toolkit = "^3.0.50"
 prettytable = "^3.16.0"
+black = "^25.1.0"
+colorama = "^0.4.6"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+assistant = "src.main:main"
+matrix = "src.main:main"
