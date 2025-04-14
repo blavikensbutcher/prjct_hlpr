@@ -111,7 +111,9 @@ Welcome to project PRJCT_HLPR
 
 ## 🤝 Розробники
 
-- blavikensbutcher
+- [blavikensbutcher](https://github.com/blavikensbutcher)
+- [Vanchenko](https://github.com/Vanchenko)
+- [Ladek](https://github.com/KovalchukODS)
 
 ---
 
