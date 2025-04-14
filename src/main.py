@@ -510,7 +510,7 @@ def run_with_matrix_style():
                 print("Unknown command. Please try again.")
     except KeyboardInterrupt:
         print(handle_save(current_directory))
-        print(Fore.GREEN + "Good bye\n" + Fore.RESET)
+        print(Fore.GREEN + "Wake up, Neo\n" + Fore.RESET)
         exit()
 
 
