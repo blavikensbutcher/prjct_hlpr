@@ -95,7 +95,11 @@ def matrix_rain(columns=100, lines=50, speed=0.05):
     try:
 
         streams = [
-            {"pos": i, "speed": random.random() * 0.1 + 0.02, "length": int(random.random() * 5) + 3}
+            {
+                "pos": i,
+                "speed": random.random() * 0.1 + 0.02,
+                "length": int(random.random() * 5) + 3,
+            }
             for i in range(0, columns, 3)
         ]
 
@@ -126,15 +130,21 @@ def matrix_rain(columns=100, lines=50, speed=0.05):
 
 def floating_message(messages, width=80, height=15):
     positions = [
-        (int(random.random() * width), int(random.random() * height)) for _ in range(len(messages))
+        (int(random.random() * width), int(random.random() * height))
+        for _ in range(len(messages))
     ]
-    vectors = [(random.random() * 2 - 1, random.random() * 2 - 1) for _ in range(len(messages))]
+    vectors = [
+        (random.random() * 2 - 1, random.random() * 2 - 1) for _ in range(len(messages))
+    ]
 
     try:
         for frame in range(100):
 
             matrix = [
-                [random.choice(matrix_chars) if random.random() < 0.05 else " " for _ in range(width)]
+                [
+                    random.choice(matrix_chars) if random.random() < 0.05 else " "
+                    for _ in range(width)
+                ]
                 for _ in range(height)
             ]
 

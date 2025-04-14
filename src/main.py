@@ -1,22 +1,24 @@
-import os
-import colorama
-import sys
-import time
-from datetime import datetime
-from random import choice
 import argparse
+import os
+import sys
+from datetime import datetime
 
-
+import colorama
+from colorama import Fore
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import FuzzyWordCompleter
 from prompt_toolkit.styles import Style as PromptStyle
-from colorama import Fore, Style as ColoramaStyle
 
 from src.classes import AddressBook, Record
 from src.decorators.input_error import input_error
-from src.notes import Note, NoteManager
 from src.format import format_table
-from src.styles import clear_screen, matrix_rain, show_access_granted, show_matrix_intro, typewriter, typewriter_with_glitch
+from src.notes import Note, NoteManager
+from src.styles import (
+    matrix_rain,
+    show_access_granted,
+    show_matrix_intro,
+    typewriter,
+)
 
 
 @input_error
@@ -362,7 +364,7 @@ def handle_clear_notes():
 def show_all_notes():
     if not NOTES_MANAGER.notes:
         return "Немає збережених нотаток."
-    
+
     colorama.init(autoreset=True)
     headers = ["Автор", "Назва", "Нотатка", "Теги", "Дата"]
     colors = [
@@ -372,11 +374,11 @@ def show_all_notes():
         colorama.Fore.MAGENTA,
         colorama.Fore.CYAN,
     ]
-    
+
     rows = []
     for note in NOTES_MANAGER.notes:
         rows.append([note.author, note.title, note.note, note.tags or "", note.date])
-    
+
     return format_table(rows, headers, colors)
 
 
@@ -560,8 +562,6 @@ def run_with_simple_style():
         print(handle_save(current_directory))
         print("Good bye!")
         exit()
-
-
 
 
 def main():

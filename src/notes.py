@@ -80,24 +80,6 @@ class NoteManager:
             table.add_row([data.author, data.title, data.note, data.tags, data.date])
         print(table)
 
-    def search_notes_by_tags(self, search_tags: str):
-        if search_tags:
-            search_tag_list = [x.strip() for x in search_tags.split(",")]
-            result = set()
-            for note in self.notes:
-                for tag in search_tag_list:
-                    if tag in note.tags:
-                        result.add(note)
-            table = PrettyTable(["Author", "Title", "Note", "Tags", "Date"])
-            table.align = "l"
-            for data in result:
-                table.add_row(
-                    [data.author, data.title, data.note, data.tags, data.date]
-                )
-            return table if len(result) != 0 else "Nothing to show"
-        else:
-            return "Nothing to show"
-
     def remove_note(self, note):
         if note in self.notes:
             self.notes.remove(note)
@@ -157,7 +139,7 @@ class NoteManager:
             for note in self.notes
         ]
         print(format_table(rows, headers, colors))
-        
+
     def search_notes_by_tags(self, search_tags: str):
         colorama.init(autoreset=True)
         if not search_tags:
@@ -176,12 +158,11 @@ class NoteManager:
             colorama.Fore.CYAN,
             colorama.Fore.GREEN,
             colorama.Fore.MAGENTA,
-            colorama.Fore.BLUE
+            colorama.Fore.BLUE,
         ]
 
         rows = [
-            [n.author, n.title, n.note, ", ".join(n.tags), str(n.date)]
-            for n in result
+            [n.author, n.title, n.note, ", ".join(n.tags), str(n.date)] for n in result
         ]
 
         return format_table(rows, headers, colors)
