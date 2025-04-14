@@ -354,6 +354,11 @@ def handle_search_note_by_tags(*args):
     tags = ",".join(args)
     return NOTES_MANAGER.search_notes_by_tags(tags)
 
+@input_error
+def search_note(*args):
+    tags = ",".join(args)
+    return NOTES_MANAGER.search_notes(tags)
+
 
 @input_error
 def handle_clear_notes():
@@ -406,6 +411,7 @@ def show_help():
         deletion note [назва] : Видаляє нотатку
         clear notes : Видаляє усі нотатки
         searching note by tags [тег_1 тег_2...] : Шукати по тегам
+        find note [текст] : Шукати нотатки за текстом у всіх полях
         """
     headers = ["Команда", "Опис"]
     colors = [colorama.Fore.YELLOW, colorama.Fore.GREEN]
@@ -455,6 +461,7 @@ COMMANDS = {
     "info": handle_phone,
     "delete": handle_delete,
     "show all": handle_show_all,
+    "find note": search_note,
     "searching note by tags": handle_search_note_by_tags,
     "search": handle_search,
     "append note tags": handle_add_tags,
@@ -478,6 +485,7 @@ command_list = [
     "show all",
     "set birthday",
     "set email",
+    "find note",
     "days to birthday",
     "delete",
     "searching note by tags",
