@@ -26,12 +26,14 @@ class Field:
 
 
 class Name(Field):
-    def is_valid_format(self, value):
+    @staticmethod
+    def is_valid_format(value):
         return True
 
 
 class Phone(Field):
-    def is_valid_format(self, value):
+    @staticmethod
+    def is_valid_format(value):
         if len(value) == 10 and value.isdigit():
             return True
         else:
@@ -39,7 +41,8 @@ class Phone(Field):
 
 
 class Birthday(Field):
-    def is_valid_format(self, value):
+    @staticmethod
+    def is_valid_format(value):
         try:
             datetime.strptime(value, "%d.%m.%Y")
             return True
@@ -48,7 +51,8 @@ class Birthday(Field):
 
 
 class Email(Field):
-    def is_valid_format(self, value):
+    @staticmethod
+    def is_valid_format(value):
         pattern = r"^[a-zA-Z]+[\w.-]+[@][a-zA-Z]+[.][a-zA-Z][a-zA-Z]+$"
         return re.match(pattern, value) is not None
 
