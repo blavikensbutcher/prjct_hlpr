@@ -394,6 +394,7 @@ def show_help():
         show birthday list [дата] : Показати список днів народженя до певної дати
         change phone [іʼмя] [старий телефон] [новий телефон]: Змінити обраний телефон.
         change email/birthday [іʼмя] [нові дані]: Змінити дані існуючого контакту.
+        change note [назва] [поле] [нові дані]: Змінити поле (author/title/note/tags) існуючої нотатки.
         remove [іʼмя] [телефон/birthday/email]: Видалити інформацію для контакту.
         info [іʼмя]: Вивести інформацію про контакт.
         delete [іʼмя]: Видалити контакт з адресної книги.
@@ -417,6 +418,30 @@ def show_help():
     return format_table(rows, headers, colors)
 
 
+def handle_change_note(title, field, *args):
+    try:
+        new_data = " ".join(args)
+        all_notes = NOTES_MANAGER.notes
+        match = None
+        
+        for el in all_notes:
+            if el.title == title:
+                match = el
+                break
+                
+        if not match:
+            return f"Нотатку з назвою '{title}' не знайдено"
+        
+        valid_fields = ["author", "title", "note", "tags", "date"]
+        if field.lower() not in valid_fields:
+            return f"Неправильне поле. Допустимі поля: {', '.join(valid_fields)}"
+        
+        match.change_note(field.lower(), new_data)
+        return f"Поле '{field}' для нотатки '{title}' змінено на '{new_data}'"
+    except Exception as e:
+        return f"Помилка при зміні нотатки: {str(e)}"
+
+
 COMMANDS = {
     "help": show_help,
     "hello": handle_hello,
@@ -438,6 +463,7 @@ COMMANDS = {
     "deletion note": handle_delete_note,
     "clear notes": handle_clear_notes,
     "show birthday list": handle_show_birthday_list,
+    "edit note": handle_change_note,
 }
 
 command_list = [
@@ -446,8 +472,7 @@ command_list = [
     "save",
     "add",
     "change birthday",
-    "change email",
-    "change phone",
+    "edit note",
     "remove",
     "info",
     "show all",
